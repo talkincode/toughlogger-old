@@ -24,6 +24,8 @@ RUN yum clean all
 RUN easy_install pip
 RUN pip install supervisor
 RUN pip install treq
+RUN pip install pymongo
+RUN pip install txmongo
 RUN pip install cyclone
 RUN pip install requests
 RUN pip install Mako==0.9.0
