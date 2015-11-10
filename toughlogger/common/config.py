@@ -44,7 +44,6 @@ class Config():
         self.defaults = ConfigDict(**{k: v for k, v in self.config.items("DEFAULT")})
         self.server = ConfigDict(**{k: v for k, v in self.config.items("server") if k not in self.defaults})
         self.database = ConfigDict(**{k: v for k, v in self.config.items("database") if k not in self.defaults})
-        self.store = ConfigDict(**{k: v for k, v in self.config.items("store") if k not in self.defaults})
 
         self.defaults.debug = self.defaults.debug in ("1","true")
         self.database.echo = self.database.echo in ("1", "true")
@@ -63,9 +62,6 @@ class Config():
             if k not in self.defaults:
                 self.config.set("database", k, v)
 
-        for k, v in self.store.iteritems():
-            if k not in self.defaults:
-                self.config.set("store", k, v)
 
 
         with open(self.filename, 'w') as cfs:

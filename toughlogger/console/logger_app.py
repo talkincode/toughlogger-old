@@ -33,11 +33,6 @@ class Application(cyclone.web.Application):
         except:
             pass
 
-        self.modb = txmongo.lazyMongoConnectionPool(
-            host=os.environ.get("MONGO_HOST", self.config.store.host),
-            port=int(os.environ.get("MONGO_PORT", self.config.store.port)),
-            pool_size=int(self.config.store.poolsize)
-        )
 
         self.rdb = scoped_session(sessionmaker(bind=get_engine(self.config), autocommit=False, autoflush=False))
 
@@ -49,7 +44,6 @@ class Application(cyclone.web.Application):
             xsrf_cookies=True,
             api_secret=config.defaults.secret,
             debug=config.defaults.debug,
-            mdb=self.modb,
             rdb=self.rdb,
             xheaders=True,
         )
