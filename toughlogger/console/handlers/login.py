@@ -20,7 +20,7 @@ class LoginHandler(BaseHandler):
             return self.render_json(code=1, msg=u"请填写密码")
         enpasswd = md5(upass.encode()).hexdigest()
 
-        opr = self.rdb.query(models.TlOperator).filter(
+        opr = self.db.query(models.TlOperator).filter(
             models.TlOperator.operator_name == uname,
             models.TlOperator.operator_pass == enpasswd
         ).first()
@@ -37,7 +37,7 @@ class LoginHandler(BaseHandler):
 
 
         if opr.operator_type in (1,):
-            for rule in self.rdb.query(models.TlOperatorRule).filter_by(operator_name=uname):
+            for rule in self.db.query(models.TlOperatorRule).filter_by(operator_name=uname):
                 permit.bind_opr(rule.operator_name, rule.rule_path)
 
         ops_log = models.TlOperateLog()
@@ -45,8 +45,8 @@ class LoginHandler(BaseHandler):
         ops_log.operate_ip = self.request.remote_ip
         ops_log.operate_time = utils.get_currtime()
         ops_log.operate_desc = u'操作员(%s)登陆' % (uname,)
-        self.rdb.add(ops_log)
-        self.rdb.commit()
+        self.db.add(ops_log)
+        self.db.commit()
 
         self.render_json(code=0, msg="ok")
 

@@ -37,9 +37,9 @@ class BaseHandler(cyclone.web.RequestHandler):
 
     def initialize(self):
         self.tp_lookup = self.application.tp_lookup
-        self.rdb = self.settings.rdb
+        self.db = self.settings.db
         if self.settings.debug:
-            log.msg("[api debug] :::::::: %s request body: %s" % (self.request.path, self.request.body))
+            log.msg("[debug] :: %s request body: %s" % (self.request.path, self.request.body))
         
     def on_finish(self):
         pass
@@ -56,13 +56,16 @@ class BaseHandler(cyclone.web.RequestHandler):
         html = self.render_string(tpl, **template_vars)
         self.write(html)
 
+    def _write(self, resp):
+        if self.settings.debug:
+            log.msg("[debug] :: %s response body: %s" % (self.request.path, resp))
+        self.write(resp)
+
     def render_json(self, **template_vars):
         if not template_vars.has_key("code"):
             template_vars["code"] = 0
         resp = json.dumps(template_vars, ensure_ascii=False)
-        if self.settings.debug:
-            log.msg("[api debug] :::::::: %s response body: %s" % (self.request.path, resp))
-        self.write(resp)
+        self._write(resp)
 
     def render_string(self, template_name, **template_vars):
         template_vars["xsrf_form_html"] = self.xsrf_form_html
@@ -108,7 +111,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         params = [msg[k] for k in msg if k != 'sign']
         local_sign = self.make_sign(secret, params)
         if self.settings.debug:
-            log.msg("[api debug] :::::::: remote_sign = %s ,local_sign = %s" % (sign, local_sign), level=logging.DEBUG)
+            log.msg("[debug] :::::::: remote_sign = %s ,local_sign = %s" % (sign, local_sign), level=logging.DEBUG)
         return sign == local_sign
 
 

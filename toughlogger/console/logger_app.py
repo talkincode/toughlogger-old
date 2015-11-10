@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
 import os
-import txmongo
 import cyclone.web
 from beaker.cache import CacheManager
 from beaker.util import parse_cache_config_options
@@ -13,7 +12,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from toughlogger.common.dbengine import get_engine
 from toughlogger.console import models
 from toughlogger.console.handlers import (
-    dashboard,login,logout
+    dashboard,login,logout,password
 )
 import time
 import sys
@@ -34,7 +33,7 @@ class Application(cyclone.web.Application):
             pass
 
 
-        self.rdb = scoped_session(sessionmaker(bind=get_engine(self.config), autocommit=False, autoflush=False))
+        self.db = scoped_session(sessionmaker(bind=get_engine(self.config), autocommit=False, autoflush=False))
 
         settings = dict(
             cookie_secret=os.environ.get('cookie_secret', "12oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo="),
@@ -44,7 +43,7 @@ class Application(cyclone.web.Application):
             xsrf_cookies=True,
             api_secret=config.defaults.secret,
             debug=config.defaults.debug,
-            rdb=self.rdb,
+            db=self.db,
             xheaders=True,
         )
 
@@ -65,11 +64,11 @@ class Application(cyclone.web.Application):
         cyclone.web.Application.__init__(self, permit.all_handlers, **settings)
 
     def init_permit(self):
-        conn = self.rdb()
+        conn = self.db()
         oprs = conn.query(models.TlOperator)
         for opr in oprs:
             if opr.operator_type > 0:
-                for rule in self.rdb.query(models.TlOperatorRule).filter_by(operator_name=opr.operator_name):
+                for rule in self.db.query(models.TlOperatorRule).filter_by(operator_name=opr.operator_name):
                     permit.bind_opr(rule.operator_name, rule.rule_path)
             elif opr.operator_type == 0:  # 超级管理员授权所有
                 permit.bind_super(opr.operator_name)
