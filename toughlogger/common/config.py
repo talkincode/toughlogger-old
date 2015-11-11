@@ -43,6 +43,7 @@ class Config():
 
         self.defaults = ConfigDict(**{k: v for k, v in self.config.items("DEFAULT")})
         self.server = ConfigDict(**{k: v for k, v in self.config.items("server") if k not in self.defaults})
+        self.syslogd = ConfigDict(**{k: v for k, v in self.config.items("syslogd") if k not in self.defaults})
         self.database = ConfigDict(**{k: v for k, v in self.config.items("database") if k not in self.defaults})
 
         self.defaults.debug = self.defaults.debug in ("1","true")
@@ -57,6 +58,10 @@ class Config():
         for k, v in self.server.iteritems():
             if k not in self.defaults:
                 self.config.set("server", k, v)
+
+        for k, v in self.syslogd.iteritems():
+            if k not in self.defaults:
+                self.config.set("syslogd", k, v)
 
         for k, v in self.database.iteritems():
             if k not in self.defaults:

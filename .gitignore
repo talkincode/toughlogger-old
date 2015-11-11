@@ -7,6 +7,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+sqlite
 env/
 build/
 develop-eggs/

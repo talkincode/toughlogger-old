@@ -13,6 +13,9 @@ import sys
 def run():
     parser = argparse.ArgumentParser()
     parser.add_argument('-serv', '--serv', action='store_true', default=False, dest='serv', help='run logger')
+    parser.add_argument('-syslogd', '--syslogd', action='store_true', default=False, dest='syslogd', help='run syslogd')
+    parser.add_argument('-t', '--tcp', action='store_true', default=False, dest='tcp',help='run syslogd via tcp')
+    parser.add_argument('-u', '--udp', action='store_true', default=False, dest='udp', help='run syslogd via udp')
     parser.add_argument('-initdb', '--initdb', action='store_true', default=False, dest='initdb', help='run initdb')
     parser.add_argument('-port', '--port', type=int, default=0, dest='port', help='admin port')
     parser.add_argument('-debug', '--debug', action='store_true', default=False, dest='debug', help='debug option')
@@ -31,6 +34,14 @@ def run():
     if args.serv:
         from toughlogger.console import logger_app
         logger_app.run(config)
+
+    if args.syslogd:
+        from toughlogger.syslog import udp_server, tcp_server
+        if args.tcp:
+            tcp_server.run(config)
+        if args.udp:
+            udp_server.run(config)
+
 
     if args.initdb:
         init_db.update(get_engine(config))
