@@ -4,6 +4,7 @@ import sys
 import json
 import beanstalkc
 import os
+import time
 from twisted.internet import protocol
 from syslog_protocol import SyslogProtocol
 from twisted.python import log
@@ -34,6 +35,7 @@ class SyslogTCP(protocol.Protocol):
 
 
 def run(config):
+    time.sleep(1.0)
     log.startLogging(sys.stdout)
     app = SyslogTCPFactory()
     app.protocol = SyslogTCP()

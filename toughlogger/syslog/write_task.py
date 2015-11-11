@@ -10,6 +10,7 @@ import datetime
 import beanstalkc
 import os
 import json
+import time
 
 class WriteProc:
 
@@ -59,6 +60,7 @@ class WriteProc:
 
 
 def run(config):
+    time.sleep(1.0)
     log.startLogging(sys.stdout)
     app = WriteProc(config)
     reactor.addSystemEventTrigger('before', 'shutdown', app.stop)

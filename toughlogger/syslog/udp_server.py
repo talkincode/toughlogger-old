@@ -36,6 +36,7 @@ class SyslogUDP(protocol.DatagramProtocol):
 
 
 def run(config):
+    time.sleep(1.0)
     log.startLogging(sys.stdout)
     app = SyslogUDP()
     app.config = config

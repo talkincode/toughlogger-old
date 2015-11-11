@@ -75,6 +75,7 @@ class Application(cyclone.web.Application):
 
 
 def run(config):
+    time.sleep(1.0)
     log.startLogging(sys.stdout)
     app = Application(config)
     reactor.listenTCP(int(config.server.port), app, interface=config.server.host)

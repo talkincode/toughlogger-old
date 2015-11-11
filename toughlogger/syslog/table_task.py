@@ -8,6 +8,7 @@ from twisted.internet import reactor
 from toughlogger.common.dbengine import get_engine
 from sqlalchemy.sql import text as _sql
 import datetime
+import time
 
 create_sql_tpl = """
 CREATE TABLE {0} (
@@ -58,6 +59,7 @@ class CreateTableTask:
 
 
 def run(config):
+    time.sleep(1.0)
     log.startLogging(sys.stdout)
     app = CreateTableTask(config)
     reactor.run()
