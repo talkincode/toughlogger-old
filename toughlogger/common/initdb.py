@@ -6,6 +6,9 @@ sys.path.insert(0,os.path.abspath(os.path.pardir))
 from toughlogger.console import models
 from sqlalchemy.orm import scoped_session, sessionmaker
 from hashlib import md5
+from sqlalchemy.sql import text as _sql
+import datetime
+import logging
 
 def init_db(db):
 
@@ -36,6 +39,31 @@ def init_db(db):
     db.commit()
     db.close()
 
+def create_logtable(db_engine):
+    create_sql_tpl = """
+    CREATE TABLE {0} (
+    	id INT(11) NOT NULL PRIMARY KEY,
+    	host VARCHAR(32) NOT NULL,
+    	time VARCHAR(19) NOT NULL,
+    	facility VARCHAR(16) NOT NULL,
+    	priority VARCHAR(16) NOT NULL,
+    	username VARCHAR(16) NULL,
+    	message VARCHAR(512) NOT NULL
+    );
+    """
+    # COMMENT = 'syslog table'
+    # COLLATE = 'utf8_general_ci'
+    # ENGINE = InnoDB
+
+    table_name = "log_{0}".format(datetime.datetime.now().strftime("%Y%m%d%H"))
+    sqlstr = create_sql_tpl.format(table_name)
+    with db_engine.begin() as conn:
+        try:
+            conn.execute(_sql(sqlstr))
+        except:
+            logging.exception("create logtable error")
+
+
 def update(db_engine):
     print 'starting update database...'
     metadata = models.get_metadata(db_engine)
@@ -44,3 +72,4 @@ def update(db_engine):
     print 'update database done'
     db = scoped_session(sessionmaker(bind=db_engine, autocommit=False, autoflush=True))()
     init_db(db)
+    create_logtable(db_engine)

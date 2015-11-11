@@ -16,6 +16,8 @@ def run():
     parser.add_argument('-syslogd', '--syslogd', action='store_true', default=False, dest='syslogd', help='run syslogd')
     parser.add_argument('-t', '--tcp', action='store_true', default=False, dest='tcp',help='run syslogd via tcp')
     parser.add_argument('-u', '--udp', action='store_true', default=False, dest='udp', help='run syslogd via udp')
+    parser.add_argument('-ttask', '--table_task', action='store_true', default=False, dest='table_task',help='run table task')
+    parser.add_argument('-wtask', '--write_task', action='store_true', default=False, dest='write_task',help='run write task')
     parser.add_argument('-initdb', '--initdb', action='store_true', default=False, dest='initdb', help='run initdb')
     parser.add_argument('-port', '--port', type=int, default=0, dest='port', help='admin port')
     parser.add_argument('-debug', '--debug', action='store_true', default=False, dest='debug', help='debug option')
@@ -41,6 +43,14 @@ def run():
             tcp_server.run(config)
         if args.udp:
             udp_server.run(config)
+
+    if args.table_task:
+        from toughlogger.syslog import table_task
+        table_task.run(config)
+
+    if args.write_task:
+        from toughlogger.syslog import write_task
+        write_task.run(config)
 
 
     if args.initdb:
