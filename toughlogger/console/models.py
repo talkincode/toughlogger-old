@@ -70,3 +70,4 @@ class TlOperateLog(DeclarativeBase):
     operate_time = Column(u'operate_time', Unicode(length=19), nullable=False,doc=u"操作时间")
     operate_desc = Column(u'operate_desc', Unicode(length=1024),doc=u"操作描述")
 
+
