@@ -1,0 +1,65 @@
+<%inherit file="base.html"/>
+
+<%def name="head()">
+<script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" href="/static/js/bootstrap-datetimepicker.min.css">
+<script>
+    $(document).ready(function(){
+         $("#log_time").datetimepicker({
+            format: 'yyyy-mm-dd hh:ii',
+            autoclose: true});
+    });
+
+</script>
+</%def>
+
+<%def name="body()">
+<section class="content">
+    <div class="box box-primary">
+        <div class="box-header">
+            <i class="glyphicon glyphicon-list-alt"></i>
+            <h3 class="box-title">日志查询</h3>
+        </div>
+    <div class="box-body">
+        <div class="container">
+        <form id="query_form" class="form-horizontal form-well" role="form" action="/logQuery" method="post">
+            ${xsrf_form_html()}
+            <div class="form-group">
+                <label for="log_level" class="col-md-1 control-label">日志级别</label>
+                <div class="col-md-3">
+                    <select id="log_level" name="log_level" class="form-control">
+                        <option value=""></option>
+                        % for key,value in priority.items():
+                        <option value="${key}" ${key==log_level and "selected" or ""}>${value}</option>
+                        % endfor
+                    </select>
+                </div>
+                <label for="host" class="col-md-1 control-label">主机</label>
+                <div class="col-md-3">
+                    <input type="text" id="host" name="host" class="form-control" placeholder="主机" value="${host or ''}">
+                </div>
+                <label for="log_time" class="col-md-1 control-label">日志时间</label>
+
+                <div class="col-md-3">
+                    <input type="text" id="log_time" name="log_time" class="form-control" placeholder="日志时间"
+                           value="${log_time or ''}">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-5 col-md-7">
+                    <button type="submit" class="btn btn-primary">查&nbsp;&nbsp;&nbsp;询</button>
+                </div>
+            </div>
+        </form>
+
+        <table class="table table-hover">
+            <thead>
+
+            </thead>
+    </table>
+    </div>
+    </div>
+</div>
+</section>
+
+</%def>
