@@ -11,7 +11,7 @@ import datetime
 
 create_sql_tpl = """
 CREATE TABLE {0} (
-    id INT(11) NOT NULL PRIMARY KEY,
+    id INTEGER NOT NULL PRIMARY KEY autoincrement,
     host VARCHAR(32) NOT NULL,
     time VARCHAR(19) NOT NULL,
     facility VARCHAR(16) NOT NULL,
@@ -42,6 +42,7 @@ class CreateTableTask:
     def __init__(self, config):
         self.sql_tpl = config.database.dbtype == 'mysql' and mysql_create_sql_tpl or create_sql_tpl
         self.dbengine = get_engine(config)
+        print self.dbengine.driver
         _task = task.LoopingCall(self.process)
         _task.start(60 * 60 * 15)
 

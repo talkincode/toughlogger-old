@@ -42,7 +42,7 @@ def init_db(db):
 def create_logtable(db_engine):
     create_sql_tpl = """
     CREATE TABLE {0} (
-    	id INT(11) NOT NULL PRIMARY KEY,
+    	id INTEGER NOT NULL PRIMARY KEY autoincrement,
     	host VARCHAR(32) NOT NULL,
     	time VARCHAR(19) NOT NULL,
     	facility VARCHAR(16) NOT NULL,
@@ -51,12 +51,24 @@ def create_logtable(db_engine):
     	message VARCHAR(512) NOT NULL
     );
     """
-    # COMMENT = 'syslog table'
-    # COLLATE = 'utf8_general_ci'
-    # ENGINE = InnoDB
-
+    mysql_create_sql_tpl = """
+    CREATE TABLE {0} (
+        id INT(11) NOT NULL PRIMARY KEY  AUTO_INCREMENT ,
+        host VARCHAR(32) NOT NULL,
+        time VARCHAR(19) NOT NULL,
+        facility VARCHAR(16) NOT NULL,
+        priority VARCHAR(16) NOT NULL,
+        username VARCHAR(16) NULL,
+        message VARCHAR(512) NOT NULL
+    )
+    COMMENT='syslog table'
+    COLLATE='utf8_general_ci'
+    ENGINE=InnoDB
+    AUTO_INCREMENT=1;
+    """
+    sql_tpl = 'mysql' in db_engine.driver and mysql_create_sql_tpl or create_sql_tpl
     table_name = "log_{0}".format(datetime.datetime.now().strftime("%Y%m%d%H"))
-    sqlstr = create_sql_tpl.format(table_name)
+    sqlstr = sql_tpl.format(table_name)
     with db_engine.begin() as conn:
         try:
             conn.execute(_sql(sqlstr))
