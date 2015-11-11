@@ -1,6 +1,63 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+import re
+from datetime import datetime
+
+
+class SyslogParser:
+
+    date_ignore_pattern = None
+    date_format = "%Y %b %d %H:%M:%S"
+    pattern = ' '.join([
+        r'<?(?P<pri>\d+)>?(?P<time>\S+ \d\d \d\d\:\d\d\:\d\d)?',
+        r'(?P<host>\S+)?',
+        r'(?P<process>\S+):?',
+        r'(?P<message>.*)',
+    ])
+
+    user_pattern = r"\[username:([^\]]*)\]"
+
+    def __init__(self):
+        self.all_regex = re.compile(self.pattern)
+        self.user_regex = re.compile(self.user_pattern)
+
+    def parse_line(self, line):
+        """Parse one line of the log file.
+        """
+        m = self.all_regex.search(line)
+        if m:
+            data = m.groupdict()
+            data = self.post_process(data)
+            if self.date_format:
+                data['time'] = self.convert_time(data['time'])
+            else:
+                data['time'] = datetime.now()
+            data['time'] = data['time'].strftime("%Y-%m-%d %H:%M:%S")
+            return data
+        else:
+            return {}
+
+    def convert_time(self, time_str):
+        """Convert date string to datetime object
+        """
+        if self.date_ignore_pattern:
+            time_str = re.sub(self.date_ignore_pattern, '', time_str)
+        return datetime.strptime(time_str, self.date_format)
+
+    def post_process(self, data):
+        data['time'] = '%d %s' % (datetime.now().year, data['time'])
+        m = self.user_regex.search(data['message'])
+        if m:
+            data['username'] = m.group(1)
+        else:
+            data['username'] = ''
+        return data
+
+
+slog_parser = SyslogParser()
+
+
 class SyslogProtocol:
 
     PRIORITY = {
@@ -43,33 +100,24 @@ class SyslogProtocol:
             if not chunk or len(chunk) < 5:
                 continue
 
-            if chunk[2] == ">":
-                res.append({
-                    "facility": SyslogProtocol.facility(int(chunk[1])),
-                    "priority": SyslogProtocol.priority(int(chunk[1])),
-                    "message" : chunk[3:]
-                })
-            elif chunk[3] == ">":
-                res.append({
-                    "facility": SyslogProtocol.facility(int(chunk[1:2])),
-                    "priority": SyslogProtocol.priority(int(chunk[1:2])),
-                    "message" : chunk[4:]
-                })
-            elif chunk[4] == ">":
-                res.append({
-                    "facility": SyslogProtocol.facility(int(chunk[1:3])),
-                    "priority": SyslogProtocol.priority(int(chunk[1:3])),
-                    "message" : chunk[5:]
-                })
-            else:
-                res.append({
-                    "facility": "unknown",
-                    "priority": "unknown",
-                    "message" : chunk
-                })
+            msg = slog_parser.parse_line(chunk)
+            if msg:
+                msg['facility'] = SyslogProtocol.facility(int(msg['pri']))
+                msg['priority'] = SyslogProtocol.priority(int(msg['pri']))
+                res.append(msg)
         return res
 
     @classmethod
     def encode(self, facility, priority, message):
         return "<%d>%s" % ((facility << 3) + priority, message)
 
+
+if __name__ == "__main__":
+
+    msg = """
+<14>Nov 11 11:41:01 qingyun dhclient[470]: DHCPACK [username:abc] from 192.168.100.1 (xid=0x3d25774e)
+<14>Nov 11 14:22:29 wjt.local toughengine: INFO    [username:www]  radiusd [Radiusd] :::::::  Send radius response: AccessAccept host=192.168.31.79:61498,id=106,Reply-Message="""
+    parser = SyslogParser()
+    for line in msg.split("\n"):
+        print parser.parse_line(line)
+        print
