@@ -80,21 +80,21 @@ class SyslogProtocol:
     }
 
     @classmethod
-    def facility(self, number):
+    def facility(cls, number):
         try:
-            return self.FACILITY[number >> 3]
+            return cls.FACILITY[number >> 3]
         except:
             return "unknown"
 
     @classmethod
-    def priority(self, number):
+    def priority(cls, number):
         try:
-            return self.PRIORITY[number & 0x07]
+            return cls.PRIORITY[number & 0x07]
         except:
             return "unknown"
 
     @classmethod
-    def decode(self, data):
+    def decode(cls, data):
         res = []
         for chunk in data.split("\n"):
             if not chunk or len(chunk) < 5:
@@ -108,7 +108,7 @@ class SyslogProtocol:
         return res
 
     @classmethod
-    def encode(self, facility, priority, message):
+    def encode(cls, facility, priority, message):
         return "<%d>%s" % ((facility << 3) + priority, message)
 
 

@@ -12,7 +12,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from toughlogger.common.dbengine import get_engine
 from toughlogger.console import models
 from toughlogger.console.handlers import (
-    dashboard,login,logout,password
+    dashboard,login,logout,password,log_query
 )
 import time
 import sys
