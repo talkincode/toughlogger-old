@@ -25,7 +25,7 @@
         </div>
     <div class="box-body">
         <div class="container">
-        <form id="query_form" class="form-horizontal form-well" role="form" action="/logQuery" method="post">
+        <form id="query_form" class="form-horizontal form-well" role="form" action="/log/query" method="post">
             ${xsrf_form_html()}
             <div class="form-group">
                 <label for="priority" class="col-md-1 control-label">日志级别</label>
@@ -86,6 +86,21 @@
                     <th>消息</th>
                 </tr>
             </thead>
+            <tbody>
+                % for log in page_data.result:
+                    <tr>
+                        <td>${log.time}</td>
+                        <td>${log.host}</td>
+                        <td>${log.username}</td>
+                        <td>${log.facility}</td>
+                        <td>${log.priority}</td>
+                        <td width="55%">${log.message}</td>
+                    </tr>
+                % endfor
+            </tbody>
+        </table>
+            ${page_data.render(form_id="query_form")}
+            </tbody>
     </table>
     </div>
     </div>

@@ -59,7 +59,7 @@ class Application(cyclone.web.Application):
                                         input_encoding='utf-8',
                                         output_encoding='utf-8',
                                         encoding_errors='replace',
-                                        module_directory="/tmp/toughengine")
+                                        module_directory="/tmp/toughlogger")
 
         self.init_permit()
         cyclone.web.Application.__init__(self, permit.all_handlers, **settings)

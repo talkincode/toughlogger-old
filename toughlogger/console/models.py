@@ -71,3 +71,22 @@ class TlOperateLog(DeclarativeBase):
     operate_desc = Column(u'operate_desc', Unicode(length=1024),doc=u"操作描述")
 
 
+table_cache = {}
+
+def get_logtable(table_name):
+
+    if table_name in table_cache:
+        return table_cache[table_name]
+
+    class TlLogger(DeclarativeBase):
+        __tablename__ = table_name
+        id = Column(u'id', INTEGER(), primary_key=True, nullable=False)
+        host = Column(u'host', Unicode(32), nullable=False)
+        time = Column(u'time', Unicode(length=19), nullable=False)
+        facility = Column(u'facility', Unicode(length=16))
+        priority = Column(u'priority', Unicode(length=16))
+        username = Column(u'username', Unicode(length=16))
+        message = Column(u'message', Unicode(length=512))
+
+    table_cache[table_name] = TlLogger
+    return TlLogger

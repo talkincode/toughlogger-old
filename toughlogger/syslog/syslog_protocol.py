@@ -30,7 +30,10 @@ class SyslogParser:
             data = m.groupdict()
             data = self.post_process(data)
             if self.date_format:
-                data['time'] = self.convert_time(data['time'])
+                try:
+                    data['time'] = self.convert_time(data['time'])
+                except:
+                    data['time'] = datetime.now()
             else:
                 data['time'] = datetime.now()
             data['time'] = data['time'].strftime("%Y-%m-%d %H:%M:%S")
@@ -44,6 +47,7 @@ class SyslogParser:
         if self.date_ignore_pattern:
             time_str = re.sub(self.date_ignore_pattern, '', time_str)
         return datetime.strptime(time_str, self.date_format)
+
 
     def post_process(self, data):
         data['time'] = '%d %s' % (datetime.now().year, data['time'])

@@ -77,7 +77,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         template_vars["permit"] = permit
         template_vars["menu_icons"] = MENU_ICONS
         template_vars["all_menus"] = permit.build_menus(
-            order_cats=[MenuSys, MenuOpt]
+            order_cats=[MenuSys, MenuOpt,MenuStat]
         )
         mytemplate = self.tp_lookup.get_template(template_name)
         return mytemplate.render(**template_vars)

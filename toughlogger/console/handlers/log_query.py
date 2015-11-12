@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding:utf-8
 
-from toughlogger.console.handlers.base import BaseHandler, MenuSys
+from toughlogger.console.handlers.base import BaseHandler, MenuStat
+from toughlogger.console import models
 from toughlogger.common.permit import permit
-from sqlalchemy.sql import text as _sql
-from toughlogger.common.paginator import Paginator
+import datetime
 
 ###############################################################################
 # log query
@@ -25,53 +25,49 @@ FACILITY = {
 class LogQueryHandler(BaseHandler):
 
     def get(self):
-        return self.render("log_query.html", prioritys = PRIORITY,facilitys=FACILITY)
+        self.post()
 
     def post(self):
+        _now = datetime.datetime.now()
         priority = self.get_argument("priority","")
         facility = self.get_argument("facility","")
-        host = self.get_argument("priority","")
-        s_log_time = self.get_argument("s_log_time","")
-        e_log_time = self.get_argument("e_log_time","")
+        host = self.get_argument("host","")
+        start_time = self.get_argument("s_log_time", _now.strftime("%Y-%m-%d %H") + ':00')
+        end_time = self.get_argument("e_log_time", _now.strftime("%Y-%m-%d %H") + ':59')
         username = self.get_argument("username","")
         sort_way = self.get_argument("sort_way","")
 
-        page_size = self.application.settings.get("page_size", 10)
-        page = int(self.get_argument("page", 1))
-        offset = (page - 1) * page_size
+        _start = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M")
+        _end = datetime.datetime.strptime(end_time, "%Y-%m-%d %H:%M")
 
+        if (_start.year,_start.month,_start.day,_start.hour) != (_end.year, _end.month, _end.day, _end.hour):
+            return self.render_error(msg=u"不支持跨小时查询")
 
+        table_name = "log_{0}".format(_start.strftime("%Y%m%d%H"))
 
-        table_names = 'table_name'
+        logcls = models.get_logtable(table_name)
 
-        sql = '''select * from %s where'''  %table_names[1]
+        _query = self.db.query(logcls).filter(
+            logcls.time >= start_time + ':00',
+            logcls.time <= end_time + ':59'
+        )
 
         if priority:
-            sql += " priority=%s" %priority
+            _query = _query.filter(logcls.priority == priority)
         if facility:
-            sql += " facility=%s" %facility
+            _query = _query.filter(logcls.facility == facility)
         if host:
-            sql += " host=%s" %host
-        if s_log_time:
-            sql += " time >= %s" %s_log_time
-        if e_log_time:
-            sql += " time <= %s" %e_log_time
+            _query = _query.filter(logcls.host == host)
         if username:
-            sql += " username like '%%s%'" %username
+            _query = _query.filter(logcls.username == username)
 
-        with self.db_engine.begin() as conn:
-            total_cur = conn.execute(_sql('''select count(*) from log_:table_names'''),table_names=table_names)
-            if self.config.database.dbtype == 'mysql':
-                sql += " order by time :sort limit :offset,:size"
-            if self.config.database.dbtype == 'sqlite':
-                sql += " order by time :sort limit :size offset :offset"
+        _query = _query.order_by(logcls.time.desc())
 
-            res_cur = conn.execute(_sql(sql),sort=sort_way,offset=offset,size=page_size)
-            result = [log for log in res_cur]
+        self.render("log_query.html",
+                    prioritys=PRIORITY,
+                    facilitys=FACILITY,
+                    page_data=self.get_page_data(_query),
+                    **self.get_params())
 
-        page_data = Paginator(self.get_page_url, result, total_cur[0], page_size)
-        page_data.result = result
 
-        return self.render("log_query.html", prioritys = PRIORITY,facilitys=FACILITY, **self.get_params())
-
-permit.add_route(LogQueryHandler, r"/logQuery", u"日志查询", MenuSys, order=3.0000, is_menu=True)
+permit.add_route(LogQueryHandler, r"/log/query", u"日志查询", MenuStat, order=3.0000, is_menu=True)
