@@ -38,7 +38,7 @@ def run(config):
     time.sleep(1.0)
     log.startLogging(sys.stdout)
     app = SyslogTCPFactory()
-    app.protocol = SyslogTCP()
+    app.protocol = SyslogTCP
     app.protocol.beanstalk_host = os.environ.get("BEANSTALK_HOST", config.defaults.get('beanstalk_host', 'localhost'))
     app.protocol.beanstalk_port = int(os.environ.get("BEANSTALK_PORT", config.defaults.get('beanstalk_port', 11300)))
     app.protocol.beanstalk = beanstalkc.Connection(
