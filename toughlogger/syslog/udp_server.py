@@ -23,6 +23,7 @@ class SyslogUDP(protocol.DatagramProtocol):
         for log_item in SyslogProtocol.decode(data):
             self.beanstalk.put(json.dumps(log_item, ensure_ascii=False))
             self.msg_num += 1
+            log.msg(data)
 
         if self.config.defaults.debug:
             ctime = time.time()
