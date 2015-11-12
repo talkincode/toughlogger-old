@@ -3,6 +3,8 @@
 import sys
 import json
 import beanstalkc
+import os
+import time
 from twisted.internet import protocol
 from syslog_protocol import SyslogProtocol
 from twisted.python import log
@@ -33,9 +35,15 @@ class SyslogTCP(protocol.Protocol):
 
 
 def run(config):
+    time.sleep(1.0)
     log.startLogging(sys.stdout)
     app = SyslogTCPFactory()
     app.protocol = SyslogTCP()
-    app.protocol.beanstalk = beanstalkc.Connection(host='localhost', port=11300)
+    app.protocol.beanstalk_host = os.environ.get("BEANSTALK_HOST", config.defaults.get('beanstalk_host', 'localhost'))
+    app.protocol.beanstalk_port = int(os.environ.get("BEANSTALK_PORT", config.defaults.get('beanstalk_port', 11300)))
+    app.protocol.beanstalk = beanstalkc.Connection(
+        host=app.beanstalk_host,
+        port=app.beanstalk_port
+    )
     reactor.listenTCP(int(config.syslogd.tcp_port), app, interface=config.syslogd.host)
     reactor.run()

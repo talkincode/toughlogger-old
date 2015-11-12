@@ -4,6 +4,7 @@
 import time
 import sys
 import json
+import os
 import beanstalkc
 from twisted.internet import protocol
 from syslog_protocol import SyslogProtocol
@@ -35,9 +36,15 @@ class SyslogUDP(protocol.DatagramProtocol):
 
 
 def run(config):
+    time.sleep(1.0)
     log.startLogging(sys.stdout)
     app = SyslogUDP()
     app.config = config
-    app.beanstalk = beanstalkc.Connection(host='localhost', port=11300)
+    app.beanstalk_host = os.environ.get("BEANSTALK_HOST", config.defaults.get('beanstalk_host', 'localhost'))
+    app.beanstalk_port = int(os.environ.get("BEANSTALK_PORT", config.defaults.get('beanstalk_port', 11300)))
+    app.beanstalk = beanstalkc.Connection(
+        host=app.beanstalk_host,
+        port=app.beanstalk_port
+    )
     reactor.listenUDP(int(config.syslogd.udp_port), app, interface=config.syslogd.host)
     reactor.run()
