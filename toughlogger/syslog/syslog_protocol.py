@@ -104,7 +104,6 @@ class SyslogProtocol:
         for chunk in data.split("\n"):
             if not chunk or len(chunk) < 5:
                 continue
-            print chunk
             msg = slog_parser.parse_line(chunk)
             if msg:
                 msg['facility'] = SyslogProtocol.facility(int(msg['pri']))
