@@ -21,7 +21,6 @@ class SyslogUDP(protocol.DatagramProtocol):
     def datagramReceived(self, data, (host, port)):
 
         for log_item in SyslogProtocol.decode(data):
-            log_item["host"] = host
             self.beanstalk.put(json.dumps(log_item, ensure_ascii=False))
             self.msg_num += 1
 

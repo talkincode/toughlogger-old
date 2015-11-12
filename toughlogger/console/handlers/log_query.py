@@ -10,8 +10,8 @@ import datetime
 # log query
 ###############################################################################
 PRIORITY = {
-        "emerg": u"紧急情况(系统)", "alert": u"警报", "crit": u"严重错误", "err": u"错误",
-        "warning": u"警告", "notice" :u"注意预警", "info": u"正常日志", "debug": u"调试"
+        "emerg": u"严重错误", "alert": u"警戒性错误", "crit": u"临界值错误", "err": u"一般错误",
+        "warning": u"警告", "notice" :u"通知", "info": u"信息", "debug": u"调试"
     }
 FACILITY = {
         "kern": u"kern", "user": u"user", "mail": u"mail", "daemon": u"daemon",
@@ -35,7 +35,7 @@ class LogQueryHandler(BaseHandler):
         start_time = self.get_argument("s_log_time", _now.strftime("%Y-%m-%d %H") + ':00')
         end_time = self.get_argument("e_log_time", _now.strftime("%Y-%m-%d %H") + ':59')
         username = self.get_argument("username","")
-        sort_way = self.get_argument("sort_way","")
+        keyword = self.get_argument("keyword","")
 
         _start = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M")
         _end = datetime.datetime.strptime(end_time, "%Y-%m-%d %H:%M")
@@ -60,6 +60,9 @@ class LogQueryHandler(BaseHandler):
             _query = _query.filter(logcls.host == host)
         if username:
             _query = _query.filter(logcls.username == username)
+
+        if keyword:
+            _query = _query.filter(logcls.message.like('%' + keyword + '%'))
 
         _query = _query.order_by(logcls.time.desc())
 

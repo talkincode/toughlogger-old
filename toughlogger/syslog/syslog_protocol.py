@@ -37,6 +37,7 @@ class SyslogParser:
             else:
                 data['time'] = datetime.now()
             data['time'] = data['time'].strftime("%Y-%m-%d %H:%M:%S")
+            data['message'] = line[len(data.get('pri', ''))+2:]
             return data
         else:
             return {}
@@ -103,7 +104,7 @@ class SyslogProtocol:
         for chunk in data.split("\n"):
             if not chunk or len(chunk) < 5:
                 continue
-
+            print chunk
             msg = slog_parser.parse_line(chunk)
             if msg:
                 msg['facility'] = SyslogProtocol.facility(int(msg['pri']))

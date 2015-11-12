@@ -45,7 +45,7 @@ class CreateTableTask:
         self.dbengine = get_engine(config)
         print self.dbengine.driver
         _task = task.LoopingCall(self.process)
-        _task.start(60 * 60 * 15)
+        _task.start(60 * 29)
 
     def process(self):
         table_name = "log_{0}".format((datetime.datetime.now() + datetime.timedelta(hours=1)).strftime("%Y%m%d%H"))

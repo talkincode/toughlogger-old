@@ -28,8 +28,8 @@
         <form id="query_form" class="form-horizontal form-well" role="form" action="/log/query" method="post">
             ${xsrf_form_html()}
             <div class="form-group">
-                <label for="priority" class="col-md-1 control-label">日志级别</label>
-                <div class="col-md-3">
+                <label for="priority" class="col-md-2 control-label">日志级别</label>
+                <div class="col-md-2">
                     <select id="priority" name="priority" class="form-control">
                         <option value=""></option>
                         % for key,value in prioritys.items():
@@ -37,8 +37,8 @@
                         % endfor
                     </select>
                 </div>
-                <label for="facility" class="col-md-1 control-label">日志类型</label>
-                <div class="col-md-3">
+                <label for="facility" class="col-md-2 control-label">日志类型</label>
+                <div class="col-md-2">
                     <select id="facility" name="facility" class="form-control">
                         <option value=""></option>
                         % for key,value in facilitys.items():
@@ -52,24 +52,30 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="s_log_time" class="col-md-1 control-label">开始时间</label>
-                <div class="col-md-3">
+                <label for="s_log_time" class="col-md-2 control-label">开始时间</label>
+                <div class="col-md-2">
                     <input type="text" id="s_log_time" name="s_log_time" class="form-control" placeholder="查询开始时间"
-                           value="${s_log_time or ''}" readonly>
+                           value="${s_log_time or ''}" >
                 </div>
-                <label for="e_log_time" class="col-md-1 control-label">截止时间</label>
-                <div class="col-md-3">
+                <label for="e_log_time" class="col-md-2 control-label">截止时间</label>
+                <div class="col-md-2">
                     <input type="text" id="e_log_time" name="e_log_time" class="form-control" placeholder="查询截止时间"
-                           value="${e_log_time or ''}" readonly>
+                           value="${e_log_time or ''}" >
                 </div>
-                <label for="username" class="col-md-1 control-label">用户账号</label>
+                <label for="username" class="col-md-1 control-label">用户</label>
                 <div class="col-md-3">
                     <input type="text" id="username" name="username" class="form-control" placeholder="用户账号"
                            value="${username or ''}">
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-md-offset-5 col-md-7">
+                <label for="keyword" class="col-md-2 control-label">关键词</label>
+
+                <div class="col-md-3">
+                    <input type="text" id="keyword" name="keyword" class="form-control" placeholder="关键词"
+                           value="${keyword or ''}">
+                </div>
+                <div class="col-md-7">
                     <button type="submit" class="btn btn-primary">查&nbsp;&nbsp;&nbsp;询</button>
                 </div>
             </div>

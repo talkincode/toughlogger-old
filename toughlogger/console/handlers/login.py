@@ -24,6 +24,7 @@ class LoginHandler(BaseHandler):
             models.TlOperator.operator_name == uname,
             models.TlOperator.operator_pass == enpasswd
         ).first()
+
         if not opr:
             return self.render_json(code=1, msg=u"用户名密码不符")
 
