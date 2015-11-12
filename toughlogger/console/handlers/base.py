@@ -125,6 +125,7 @@ class BaseHandler(cyclone.web.RequestHandler):
         return page_data
 
 
+
     def get_page_url(self, page, form_id=None):
         if form_id:
             return "javascript:goto_page('%s',%s);" % (form_id.strip(), page)

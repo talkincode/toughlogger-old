@@ -5,7 +5,10 @@
 <link rel="stylesheet" href="/static/js/bootstrap-datetimepicker.min.css">
 <script>
     $(document).ready(function(){
-         $("#log_time").datetimepicker({
+         $("#s_log_time").datetimepicker({
+            format: 'yyyy-mm-dd hh:ii',
+            autoclose: true});
+        $("#e_log_time").datetimepicker({
             format: 'yyyy-mm-dd hh:ii',
             autoclose: true});
     });
@@ -25,12 +28,21 @@
         <form id="query_form" class="form-horizontal form-well" role="form" action="/logQuery" method="post">
             ${xsrf_form_html()}
             <div class="form-group">
-                <label for="log_level" class="col-md-1 control-label">日志级别</label>
+                <label for="priority" class="col-md-1 control-label">日志级别</label>
                 <div class="col-md-3">
-                    <select id="log_level" name="log_level" class="form-control">
+                    <select id="priority" name="priority" class="form-control">
                         <option value=""></option>
-                        % for key,value in priority.items():
-                        <option value="${key}" ${key==log_level and "selected" or ""}>${value}</option>
+                        % for key,value in prioritys.items():
+                        <option value="${key}" ${key==priority and "selected" or ""}>${value}</option>
+                        % endfor
+                    </select>
+                </div>
+                <label for="facility" class="col-md-1 control-label">日志类型</label>
+                <div class="col-md-3">
+                    <select id="facility" name="facility" class="form-control">
+                        <option value=""></option>
+                        % for key,value in facilitys.items():
+                        <option value="${key}" ${key==facility and "selected" or ""}>${value}</option>
                         % endfor
                     </select>
                 </div>
@@ -38,11 +50,22 @@
                 <div class="col-md-3">
                     <input type="text" id="host" name="host" class="form-control" placeholder="主机" value="${host or ''}">
                 </div>
-                <label for="log_time" class="col-md-1 control-label">日志时间</label>
-
+            </div>
+            <div class="form-group">
+                <label for="s_log_time" class="col-md-1 control-label">开始时间</label>
                 <div class="col-md-3">
-                    <input type="text" id="log_time" name="log_time" class="form-control" placeholder="日志时间"
-                           value="${log_time or ''}">
+                    <input type="text" id="s_log_time" name="s_log_time" class="form-control" placeholder="查询开始时间"
+                           value="${s_log_time or ''}" readonly>
+                </div>
+                <label for="e_log_time" class="col-md-1 control-label">截止时间</label>
+                <div class="col-md-3">
+                    <input type="text" id="e_log_time" name="e_log_time" class="form-control" placeholder="查询截止时间"
+                           value="${e_log_time or ''}" readonly>
+                </div>
+                <label for="username" class="col-md-1 control-label">用户账号</label>
+                <div class="col-md-3">
+                    <input type="text" id="username" name="username" class="form-control" placeholder="用户账号"
+                           value="${username or ''}">
                 </div>
             </div>
             <div class="form-group">
@@ -54,7 +77,14 @@
 
         <table class="table table-hover">
             <thead>
-
+                <tr>
+                    <th>时间</th>
+                    <th>主机</th>
+                    <th>用户账号</th>
+                    <th>日志类型</th>
+                    <th>日志级别</th>
+                    <th>消息</th>
+                </tr>
             </thead>
     </table>
     </div>

@@ -41,6 +41,7 @@ class Application(cyclone.web.Application):
             template_path=os.path.join(os.path.dirname(__file__), "views"),
             static_path=os.path.join(os.path.dirname(__file__), "static"),
             xsrf_cookies=True,
+            db_engine = get_engine(self.config),
             api_secret=config.defaults.secret,
             debug=config.defaults.debug,
             db=self.db,
