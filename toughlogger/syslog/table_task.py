@@ -41,9 +41,8 @@ AUTO_INCREMENT=1;
 class CreateTableTask:
 
     def __init__(self, config):
-        self.sql_tpl = config.database.dbtype == 'mysql' and mysql_create_sql_tpl or create_sql_tpl
         self.dbengine = get_engine(config)
-        print self.dbengine.driver
+        self.sql_tpl = 'mysql' in self.dbengine.driver and mysql_create_sql_tpl or create_sql_tpl
         _task = task.LoopingCall(self.process)
         _task.start(60 * 29)
 
