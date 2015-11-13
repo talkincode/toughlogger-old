@@ -53,6 +53,7 @@ class WriteProc:
                 self.msg_num += 1
                 # if self.config.defaults.debug:
                 #     log.msg("write syslog success")
+                print dir(conn)
             except Exception as err:
                 log.err(err, 'write syslog error')
                 job.release()
