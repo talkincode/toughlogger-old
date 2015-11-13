@@ -37,12 +37,12 @@ class BaseHandler(cyclone.web.RequestHandler):
 
     def initialize(self):
         self.tp_lookup = self.application.tp_lookup
-        self.db = self.settings.db
+        self.db = self.settings.db()
         if self.settings.debug:
             log.msg("[debug] :: %s request body: %s" % (self.request.path, self.request.body))
         
     def on_finish(self):
-        pass
+        self.db.close()
         
     def get_error_html(self, status_code=500, **kwargs):
         return self.render_json(code=1, msg=u"%s:server error" % status_code)
