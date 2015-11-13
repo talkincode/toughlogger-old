@@ -30,7 +30,6 @@ class WriteProc:
     def process(self):
         # log.msg("fetch queue  message")
         job = self.beanstalk.reserve()
-        self.msg_num += 1
         msg_dict = json.loads(job.body)
 
         _date = datetime.datetime.strptime(msg_dict['time'], self.date_format)
@@ -51,6 +50,7 @@ class WriteProc:
                              username=msg_dict.get("username"),
                              message=msg_dict.get("message"))
                 job.delete()
+                self.msg_num += 1
                 # if self.config.defaults.debug:
                 #     log.msg("write syslog success")
             except Exception as err:
