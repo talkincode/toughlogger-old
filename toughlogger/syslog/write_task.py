@@ -29,6 +29,7 @@ class WriteProc:
         self.task.start(0.002)
 
     def process(self):
+        log.msg("fetch queue  message")
         job = self.beanstalk.reserve()
         msg_dict = json.loads(job.body)
 
