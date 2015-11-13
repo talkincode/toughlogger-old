@@ -40,6 +40,8 @@ class WriteProc:
         values (:host,:time,:facility,:priority,:username,:message)""".format(table_name))
 
         with self.dbengine.begin() as conn:
+            if self.config.defaults.debug:
+                log.msg("start write message to db")
             try:
                 conn.execute(insert_sql,
                              host=msg_dict.get("host"),
