@@ -25,14 +25,13 @@ class SyslogUDP(protocol.DatagramProtocol):
             self.msg_num += 1
 
 
-        if self.config.defaults.debug:
-            ctime = time.time()
-            total_time = (ctime - self.sum_time)
-            if total_time >= 5:
-                per_num = self.msg_num / total_time
-                log.msg("Total msg: %s; Time total: %s sec; Msg per second: %s;" % (self.msg_num, total_time, per_num))
-                self.msg_num = 0
-                self.sum_time = time.time()
+        ctime = time.time()
+        total_time = (ctime - self.sum_time)
+        if total_time >= 5:
+            per_num = self.msg_num / total_time
+            log.msg("Total msg: %s; Time total: %s sec; Msg per second: %s;" % (self.msg_num, total_time, per_num))
+            self.msg_num = 0
+            self.sum_time = time.time()
 
 
 def run(config):

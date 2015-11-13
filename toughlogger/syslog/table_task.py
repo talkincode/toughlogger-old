@@ -43,8 +43,6 @@ class CreateTableTask:
     def __init__(self, config):
         self.dbengine = get_engine(config)
         self.sql_tpl = 'mysql' in self.dbengine.driver and mysql_create_sql_tpl or create_sql_tpl
-        _task = task.LoopingCall(self.process)
-        _task.start(60 * 29)
 
     def process(self):
         table_name = "log_{0}".format((datetime.datetime.now() + datetime.timedelta(hours=1)).strftime("%Y%m%d%H"))
@@ -56,9 +54,12 @@ class CreateTableTask:
             except Exception as err:
                 log.msg('create table error {0}'.format(err.message))
 
+        reactor.callLater(60 * 20, self.process, )
+
 
 def run(config):
     time.sleep(1.0)
     log.startLogging(sys.stdout)
     app = CreateTableTask(config)
+    app.process()
     reactor.run()

@@ -2,7 +2,6 @@
 # coding=utf-8
 import sys
 from twisted.python import log
-from twisted.internet import task
 from twisted.internet import reactor
 from toughlogger.common.dbengine import get_engine
 from sqlalchemy.sql import text as _sql
@@ -25,12 +24,13 @@ class WriteProc:
             host=self.beanstalk_host,
             port=self.beanstalk_port
         )
-        self.task = task.LoopingCall(self.process)
-        self.task.start(0.002)
+        self.msg_num = 0
+        self.sum_time = time.time()
 
     def process(self):
-        log.msg("fetch queue  message")
+        # log.msg("fetch queue  message")
         job = self.beanstalk.reserve()
+        self.msg_num += 1
         msg_dict = json.loads(job.body)
 
         _date = datetime.datetime.strptime(msg_dict['time'], self.date_format)
@@ -40,8 +40,8 @@ class WriteProc:
         values (:host,:time,:facility,:priority,:username,:message)""".format(table_name))
 
         with self.dbengine.begin() as conn:
-            if self.config.defaults.debug:
-                log.msg("start write message to db")
+            # if self.config.defaults.debug:
+            #     log.msg("start write message to db")
             try:
                 conn.execute(insert_sql,
                              host=msg_dict.get("host"),
@@ -51,23 +51,31 @@ class WriteProc:
                              username=msg_dict.get("username"),
                              message=msg_dict.get("message"))
                 job.delete()
-                if self.config.defaults.debug:
-                    log.msg("write syslog success")
+                # if self.config.defaults.debug:
+                #     log.msg("write syslog success")
             except Exception as err:
                 log.err(err, 'write syslog error')
                 job.release()
 
+        reactor.callLater(0.001, self.process, )
 
-    def stop(self):
-        log.msg("stop write task")
+        ctime = time.time()
+        total_time = (ctime - self.sum_time)
+        if total_time >= 5:
+            per_num = self.msg_num / total_time
+            log.msg(
+                "Total msg: %s; Time total: %s sec; Msg per second: %s;" % (self.msg_num, total_time, per_num))
+            self.msg_num = 0
+            self.sum_time = time.time()
+
 
 
 def run(config):
     time.sleep(1.0)
     log.startLogging(sys.stdout)
-    app = WriteProc(config)
-    reactor.addSystemEventTrigger('before', 'shutdown', app.stop)
     log.msg("start write task")
+    app = WriteProc(config)
+    app.process()
     reactor.run()
 
 
