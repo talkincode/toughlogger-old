@@ -86,7 +86,7 @@ def get_logtable(table_name):
         facility = Column(u'facility', Unicode(length=16))
         priority = Column(u'priority', Unicode(length=16))
         username = Column(u'username', Unicode(length=16))
-        message = Column(u'message', Unicode(length=512))
+        message = Column(u'message', Unicode(length=1024))
 
     table_cache[table_name] = TlLogger
     return TlLogger

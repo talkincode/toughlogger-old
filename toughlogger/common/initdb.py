@@ -48,7 +48,7 @@ def create_logtable(db_engine):
     	facility VARCHAR(16) NOT NULL,
     	priority VARCHAR(16) NOT NULL,
     	username VARCHAR(16) NULL,
-    	message VARCHAR(512) NOT NULL
+    	message VARCHAR(1024) NOT NULL
     );
     """
     mysql_create_sql_tpl = """
@@ -59,7 +59,7 @@ def create_logtable(db_engine):
         facility VARCHAR(16) NOT NULL,
         priority VARCHAR(16) NOT NULL,
         username VARCHAR(16) NULL,
-        message VARCHAR(512) NOT NULL
+        message VARCHAR(1024) NOT NULL
     )
     COMMENT='syslog table'
     COLLATE='utf8_general_ci'
