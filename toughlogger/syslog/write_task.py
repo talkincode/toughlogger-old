@@ -67,6 +67,7 @@ def run(config):
     log.startLogging(sys.stdout)
     app = WriteProc(config)
     reactor.addSystemEventTrigger('before', 'shutdown', app.stop)
+    log.msg("start write task")
     reactor.run()
 
 
