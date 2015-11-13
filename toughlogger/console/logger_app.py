@@ -33,7 +33,7 @@ class Application(cyclone.web.Application):
             pass
 
 
-        self.db = scoped_session(sessionmaker(bind=get_engine(self.config), autocommit=False, autoflush=False))
+        self.db = scoped_session(sessionmaker(bind=get_engine(self.config), autocommit=False, autoflush=True))
 
         settings = dict(
             cookie_secret=os.environ.get('cookie_secret', "12oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o/Vo="),
