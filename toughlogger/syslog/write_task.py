@@ -30,7 +30,7 @@ class WriteProc:
 
     def process(self):
         log.msg("fetch queue  message")
-        job = self.beanstalk.reserve()
+        job = self.beanstalk.reserve(timeout=0.1)
         msg_dict = json.loads(job.body)
 
         _date = datetime.datetime.strptime(msg_dict['time'], self.date_format)
