@@ -14,6 +14,11 @@
     });
 
 </script>
+<style type="text/css">
+    .break-all {
+        word-break: break-all; /*必須*/
+    }
+</style>
 </%def>
 
 <%def name="body()">
@@ -91,6 +96,11 @@
                     <th>日志级别</th>
                     <th>消息</th>
                 </tr>
+                <style type="text/css">
+                    .AutoNewline {
+                        word-break: break-all; /*必須*/
+                    }
+                </style>
             </thead>
             <tbody>
                 % for log in page_data.result:
@@ -100,7 +110,7 @@
                         <td>${log.username}</td>
                         <td>${log.facility}</td>
                         <td>${log.priority}</td>
-                        <td width="55%">${log.message}</td>
+                        <td width="55%" class="break-all">${log.message}</td>
                     </tr>
                 % endfor
             </tbody>
