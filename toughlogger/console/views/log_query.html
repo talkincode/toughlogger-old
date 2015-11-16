@@ -87,30 +87,17 @@
         </form>
 
         <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>时间</th>
-                    <th>主机</th>
-                    <th>用户账号</th>
-                    <th>日志类型</th>
-                    <th>日志级别</th>
-                    <th>消息</th>
-                </tr>
-                <style type="text/css">
-                    .AutoNewline {
-                        word-break: break-all; /*必須*/
-                    }
-                </style>
-            </thead>
             <tbody>
                 % for log in page_data.result:
                     <tr>
-                        <td>${log.time}</td>
-                        <td>${log.host}</td>
-                        <td>${log.username}</td>
-                        <td>${log.facility}</td>
-                        <td>${log.priority}</td>
-                        <td width="55%" class="break-all">${log.message}</td>
+                        <th>级别:${log.priority}</th>
+                        <th>类型:${log.facility}</th>
+                        <th>时间:${log.time}</th>
+                        <th>主机:${log.host}</th>
+                        <th>账号:${log.username}</th>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="break-all">${log.message}</td>
                     </tr>
                 % endfor
             </tbody>
